@@ -70,4 +70,19 @@ In practice, expressions with well-formedness checks are convenient to work with
   that compose well.
 
 
+## Deliverables
 
+* Syntax and operational semantics of ILLPL, a core calculus based on Dafny that
+  supports verification and well-formedness checks.
+
+* A formalization of the well-formedness check and VC generation for ILLPL.
+
+* A soundness theorem saying that verified programs don't go wrong.
+
+* A translation of ILLPL into WELLPL, a core calculus based on Boogie, in which
+  well-formedness is syntactic.
+
+* A proof that the translation correctly translates ILLPL well-formedness into
+  WELLPL verification conditions. Thus, the translation gives a way to implement
+  ILLPL using traditional FOL techniques without any notion of ill-formed
+  expressions.
