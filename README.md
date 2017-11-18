@@ -106,11 +106,11 @@ In practice, expressions with well-formedness checks are convenient to work with
 
     fun sorted(xs) =
         // note xs[i] and xs[i+1] wf due to range hypothesis
-        forall i | 0 <= i < |xs|-1 :: xs[i] <= xs[i+1]
+        forall i. 0 <= i < |xs|-1 ==> xs[i] <= xs[i+1]
 
     fun insert_sorted(a, xs)
         requires sorted(xs)
-        ensures sorted(insert(a, xs))
+        ensures _. sorted(insert(a, xs))
     =
         if xs == [] then
             ()
@@ -125,6 +125,38 @@ In practice, expressions with well-formedness checks are convenient to work with
         if xs == [] then
             ()
         else
-            sort_sorted(xs[1..]);  // establishes insert_sorted precondition
-            insert_sorted(xs[0], sort(xs[1..]))
+            let _ = sort_sorted(xs[1..])  // establishes insert_sorted precondition
+            in insert_sorted(xs[0], sort(xs[1..]))
+
+## Syntax and semantics of ILLPL
+
+    x  \in  variable name
+    f  \in  function name
+    n  \in  Z
+
+    op \in  total binary operators
+    op ::=  + | == | <= | <
+
+    e  \in  expression
+    e  ::=  x                       // variable
+         |  n                       // integer literal
+         |  ()                      // unit
+         |  [e, ..., e]             // list literal (0 or more elements)
+         |  e op e                  // (total) binary operators
+         |  e && e                  // short-circuiting conjunction
+         |  e ==> e                 // short-circuiting implication
+         |  e[e]                    // list indexing
+         |  e[e..]                  // list slicing ('..' are part of syntax)
+         |  f(e, ..., e)            // function call (0 or more arguments)
+         |  if e then e else e      // conditional expression
+         |  let x = e in e          // let expression (x bound in second expr)
+         |  forall x. e             // universal quantifier (binds x in e)
+         |  exists x. e             // existential quantifier (binds x in e)
+
+    b  \in  binding
+    b  ::=  fun f(x, ..., x)        // function binding (poss. recursive; 0 or more params)
+                requires e          //     function precondition
+                ensures r. e        //     function postcondition (binds r to result)
+            = e                     //     function body
+         |  val x = e               // top-level value binding (think: main expression)
 
