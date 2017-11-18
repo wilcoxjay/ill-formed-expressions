@@ -168,3 +168,109 @@ In practice, expressions with well-formedness checks are convenient to work with
     p  ::=  b* e                    // list of function definitions and a "main" expression
 
 
+### Semantics
+
+    v  \in  value
+       ::=  true
+         |  false
+         |  n
+         |  ()
+         |  [v, ..., v]
+
+    environment = (variable name -> value, function name -> binding)
+
+    E  \in  environment
+
+    // We abuse notation by simultaneously treating E as a map from
+    // variable names to values and from function names to bindings.
+    // Since we syntactically distinguish variable names from function
+    // names, this should cause no confusion
+
+
+
+    +----------------+
+    |  (E, e)  V  v  |       // big-step evaluation judgment
+    +----------------+
+
+        x \in E
+    ---------------
+    (E, x)  V  E[x]
+
+
+    ------------
+    (E, v)  V  v
+
+
+      (E, e1) V v1  ...  (E, en) V vn
+    ------------------------------------
+    (E, [e1, ..., en])  V  [v1, ..., vn]
+
+
+    (E, e1) V v1      (E, e2) V v2
+    ------------------------------
+      (E, e1 op e2)  V  v1 op v2
+
+
+        (E, e1) V false
+    -----------------------
+    (E, e1 && e2)  V  false
+
+
+    (E, e1) V true    (E, e2) V v2
+    -------------------------------
+         (E, e1 && e2)  V  v2
+
+
+        (E, e1) V false
+    -----------------------
+    (E, e1 ==> e2)  V  true
+
+
+    (E, e1) V true    (E, e2) V v2
+    -------------------------------
+         (E, e1 ==> e2)  V  v2
+
+
+    e1 V [v0, ..., v{n-1}]   e2 V i   0 <= i < n
+    --------------------------------------------
+                (E, e1[e2])  V  vi
+
+
+    e1 V [v0, ..., v{n-1}]   e2 V i   0 <= i <= n
+    ---------------------------------------------
+        (E, e1[e2..])  V  [vi, ..., v{n-1}]
+
+
+     (E, e1) V true   (E, v2) V v2
+    -------------------------------
+    (E, if e1 then e2 else e3) V v2
+
+
+     (E, e1) V false  (E, e3) V v3
+    -------------------------------
+    (E, if e1 then e2 else e3) V v3
+
+
+    f \in E
+    E[f] = fun f(x1, ..., xn)
+               requires P
+               ensures r. Q
+           = e
+    (E, e1)  V  v1
+    ...
+    (E, en)  V  vn
+    P(v1, ..., vn)
+    ([x1 := v1, ..., xn := vn], e)  V  v
+    ------------------------------------
+          (E, f(e1, ..., en))  V  v
+
+
+    (E, e1) V v1   (E[x:=v1], e2) V v2
+    ----------------------------------
+       (E, let x = e1 in e2)  V  v2
+
+
+        (E, e) V true
+    --------------------
+    (E, assert e)  V  ()
+
