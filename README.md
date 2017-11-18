@@ -130,6 +130,8 @@ In practice, expressions with well-formedness checks are convenient to work with
 
 ## Syntax and semantics of ILLPL
 
+### Syntax
+
     x  \in  variable name
     f  \in  function name
     n  \in  Z
@@ -139,6 +141,8 @@ In practice, expressions with well-formedness checks are convenient to work with
 
     e  \in  expression
     e  ::=  x                       // variable
+         |  true                    // boolean literals
+         |  false                   //
          |  n                       // integer literal
          |  ()                      // unit
          |  [e, ..., e]             // list literal (0 or more elements)
@@ -152,11 +156,15 @@ In practice, expressions with well-formedness checks are convenient to work with
          |  let x = e in e          // let expression (x bound in second expr)
          |  forall x. e             // universal quantifier (binds x in e)
          |  exists x. e             // existential quantifier (binds x in e)
+         |  assert e                // crash unless e is true
 
     b  \in  binding
     b  ::=  fun f(x, ..., x)        // function binding (poss. recursive; 0 or more params)
                 requires e          //     function precondition
                 ensures r. e        //     function postcondition (binds r to result)
             = e                     //     function body
-         |  val x = e               // top-level value binding (think: main expression)
+
+    p  \in  program
+    p  ::=  b* e                    // list of function definitions and a "main" expression
+
 
