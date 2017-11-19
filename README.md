@@ -136,8 +136,11 @@ In practice, expressions with well-formedness checks are convenient to work with
     f  \in  function name
     n  \in  Z
 
-    op \in  total binary operators
-    op ::=  + | == | <= | <
+    unop  \in  total unary operators
+    unop  ::=  ! | -
+
+    binop  \in  total binary operators
+    binop  ::=  + | - | * | / | == | != | <= | < | >= | >
 
     e  \in  expression
     e  ::=  x                       // variable
@@ -146,8 +149,10 @@ In practice, expressions with well-formedness checks are convenient to work with
          |  n                       // integer literal
          |  ()                      // unit
          |  [e, ..., e]             // list literal (0 or more elements)
-         |  e op e                  // (total) binary operators
+         |  unop e                  // (total) unary operators
+         |  e binop e               // (total) binary operators
          |  e && e                  // short-circuiting conjunction
+         |  e || e                  // short-circuiting disjunction
          |  e ==> e                 // short-circuiting implication
          |  e[e]                    // list indexing
          |  e[e..]                  // list slicing ('..' are part of syntax)
@@ -206,9 +211,14 @@ In practice, expressions with well-formedness checks are convenient to work with
     (E, [e1, ..., en])  V  [v1, ..., vn]
 
 
-    (E, e1) V v1      (E, e2) V v2
-    ------------------------------
-      (E, e1 op e2)  V  v1 op v2
+         (E, e)  V  v
+    ------------------------
+    (E, unop e)  V  unop v
+
+
+     (E, e1) V v1          (E, e2) V v2
+    ------------------------------------
+      (E, e1 binop e2)  V  v1 binop v2
 
 
         (E, e1) V false
@@ -229,6 +239,16 @@ In practice, expressions with well-formedness checks are convenient to work with
     (E, e1) V true    (E, e2) V v2
     -------------------------------
          (E, e1 ==> e2)  V  v2
+
+
+        (E, e1) V true
+    -----------------------
+    (E, e1 || e2)  V  true
+
+
+    (E, e1) V false    (E, e2) V v2
+    -------------------------------
+         (E, e1 || e2)  V  v2
 
 
     e1 V [v0, ..., v{n-1}]   e2 V i   0 <= i < n
