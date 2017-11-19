@@ -7,6 +7,10 @@ struct
   let (>>) x f = ignore (f x); x
 end
 
+let flip f a b = f b a
+
+let uncurry f (x, y) = f x y
+
 let with_ic path f =
   let ic = Pervasives.open_in path in
   let res = f ic in

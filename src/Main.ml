@@ -1,3 +1,4 @@
+open Util.Combinators
 
 let usage_msg =
 "Main <file>
@@ -59,7 +60,11 @@ let lexer lexbuf =
 let main () =
   parse_args ();
   Parser.of_file ILLPL.Parser.prog lexer !file
-    |> Format.printf "%a\n%!" ILLPL.Printer.pr_prog
+    >> Format.printf "%a\n%!" ILLPL.Printer.pr_prog
+    |> ILLPL.Eval.eval_prog
+    |> Format.printf "%a\n%!" ILLPL.Eval.pr_value
 
 
-let _ = main ()
+let _ =
+  try main ()
+  with Failure msg -> Printf.printf "FAILURE\n%s\n%!" msg
